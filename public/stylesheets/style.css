@@ -1,8 +1,18 @@
 body {
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  color: #444;
 }
 
 a {
   color: #00B7FF;
+  text-decoration: none;
+}
+
+blockquote footer {
+  font-family: serif;
+}
+
+blockquote {
+  color: gray;
 }
