@@ -1,7 +1,15 @@
-doctype html
-html
-  head
-    title= title
-    link(rel='stylesheet', href='/stylesheets/style.css')
-  body
-    block content
+extends ../node_modules/pug-bootstrap/_bootstrap.pug
+append styles
+	// Custom styles for this template
+	link(href='../node_modules/pug-bootstrap/css/starter-template.css', rel='stylesheet')
+	link(rel='stylesheet', href='/stylesheets/style.css')
+
+block body
+	+navbar-fixed(title,"navbar","inverse")
+		+nav_item("/","active") Home
+		+nav_item("#") About
+		+nav_item("#") Contact
+	.container
+		.starter-template
+			h1= title
+			block content

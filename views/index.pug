@@ -1,14 +1,13 @@
 extends layout
 
 block content
-  h1= title
   blockquote
-    p A phase field model is a mathematical model for solving interfacial problems. It has mainly been applied to solidification dynamics, but it has also been applied to other situations such as viscous fingering, fracture dynamics, vesicle dynamics, etc.
+    p A <b>phase field</b> model is a mathematical model for solving interfacial problems. It has mainly been applied to solidification dynamics, but it has also been applied to other situations such as viscous fingering, fracture dynamics, vesicle dynamics, etc.
     p The method substitutes boundary conditions at the interface by a partial differential equation for the evolution of an auxiliary field (the phase field) that takes the role of an order parameter. This phase field takes two distinct values (for instance +1 and −1) in each of the phases, with a smooth change between both values in the zone around the interface, which is then diffuse with a finite width. A discrete location of the interface may be defined as the collection of all points where the phase field takes a certain value (e.g., 0).
     p A phase field model is usually constructed in such a way that in the limit of an infinitesimal interface width (the so-called sharp interface limit) the correct interfacial dynamics are recovered. This approach permits to solve the problem by integrating a set of partial differential equations for the whole system, thus avoiding the explicit treatment of the boundary conditions at the interface.
 
     footer
-      a(href='https://en.wikipedia.org/wiki/Phase_field_models') — Wikipedia
+      a(href='https://en.wikipedia.org/wiki/Phase_field_models') Wikipedia
   
   h2 Ressources
   ul
