@@ -37,3 +37,51 @@ block content
       +icon("education")
       a(href='https://www.researchgate.net/publication/228365777_Phase-Field_Simulation_of_Solidification_1') Phase-Field Simulation of Solidification, W. Boettinger <i>et al.<i>
       |  (via Researchgate)
+
+  br
+  h4 MOOSE example input
+  pre.mooseinput
+    |[Mesh]
+    |  type = GeneratedMesh
+    |  dim = 1
+    |  nx = 10
+    |[]
+    |
+    |[Variables]
+    |  [./u]
+    |    order = FIRST
+    |    family = LAGRANGE
+    |  [../]
+    |[]
+    |
+    |[Kernels]
+    |  [./diff_u]
+    |    type = Diffusion
+    |    variable = u
+    |  [../]
+    |[]
+    |
+    |[BCs]
+    |  [./left_u]
+    |    type = DirichletBC
+    |    variable = u
+    |    boundary = left
+    |    value = 0
+    |  [../]
+    |
+    |  [./right_u]
+    |    type = DirichletBC
+    |    variable = u
+    |    boundary = right
+    |    value = 1
+    |  [../]
+    |[]
+    |
+    |[Executioner]
+    |  type = Steady
+    |  solve_type = 'PJFNK'
+    |[]
+    |
+    |[Outputs]
+    |  exodus = true
+    |[]

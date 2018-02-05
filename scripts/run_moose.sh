@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # unprivileged UID to run under
-MYUID=1002
-MYGID=1002
+MYUID=`id www -u`
+MYGID=`id www -g`
 
 # source MOOSE profile
 echo Loading MOOSE environment...

@@ -10,3 +10,8 @@ li span.glyphicon {
 blockquote {
   color: #666;
 }
+
+.mooseinput {
+  width: 100%;
+  height: 15em;
+}
