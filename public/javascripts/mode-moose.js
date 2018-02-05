@@ -45,7 +45,7 @@ oop.inherits(Mode, TextMode);
 
 (function() {
     this.lineCommentStart = "#";
-    this.$id = "ace/mode/gitignore";
+    this.$id = "ace/mode/moose";
 }).call(Mode.prototype);
 
 exports.Mode = Mode;
