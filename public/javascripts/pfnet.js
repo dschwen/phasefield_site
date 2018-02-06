@@ -21,7 +21,9 @@ function activateEditors()
 
     // add controls
     parent.prepend($('<button>Run</button>').on('click', function() {
-      console.log(editor.getValue());
+      $.post('/api', { action: 'setup', input: editor.getValue() }, function(data) {
+        console.log(data);
+      });
     }));
   });
 }
