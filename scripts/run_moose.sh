@@ -30,7 +30,7 @@ mount -t overlay overlay -o lowerdir=$LOWER,upperdir=$UPPER,workdir=$WORK $MNT
 
 # run moose
 echo Running MOOSE...
-timeout 120s chroot --userspec $MYUID:$MYGID $MNT /home/daniel/moose/modules/combined/combined-opt -i test.i
+timeout 120s chroot --userspec $MYUID:$MYGID $MNT /home/daniel/moose/modules/combined/combined-opt -i input.i
 
 # unmount overlayfs
 echo Unmounting overlay file system...

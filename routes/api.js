@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var crypto = require('crypto');
 var fs = require('fs');
+var cp = require('child_process');
 
 // active simulations
 var simulations = new Map();
@@ -28,7 +29,11 @@ router.all('/api', function(req, res, next) {
         }
         
         // success
-        simulations.set(name, {'prepared': Date.now(), 'ip': req.connection.remoteAddress});
+        simulations.set(name, {
+          'prepared': Date.now(), 
+          'ip': req.connection.remoteAddress,
+          'running': false
+        });
         res.json({'status': 'success', 'name': name});
       });
     });
@@ -42,17 +47,47 @@ router.all('/api', function(req, res, next) {
 // websockets
 router.ws('/api', function(ws, req) {
   var name = req.query.name;
-  if (!name || !simulations.has(name))
+  if (!name || !simulations.has(name) || simulations.get(name).running)
   {
     ws.close();
     return;
   }
 
-  ws.send('welcome ' + JSON.stringify(simulations.get(name)));
+  var sim = simulations.get(name);
+  sim.running = true;
+
+  ws.send('welcome ' + JSON.stringify(sim) + '\n');
   
+  try {
+    sim.child = cp.spawn('/usr/bin/sudo', ['/var/www/phasefield_site/scripts/run_moose.sh', name]);
+    //sim.child = cp.spawn('/bin/ls', ['-la', '/']);
+  } catch(err) {
+    ws.send(JSON.stringify(err));
+  }
+
+  sim.child.on('exit', function (code, signal) {
+    console.log(ws);
+    ws.send('child process exited with ' +
+            `code ${code} and signal ${signal}` + '\n');
+    //ws.close();
+  });
+
+  sim.child.stdout.on('data', function(data) {
+    ws.send(data.toString());
+  });
+  sim.child.stderr.on('data', function(data) {
+    ws.send(data.toString());
+  });
+
+  ws.on('close', function(msg) {
+    sim.child.kill();
+  });
+
+/*
   ws.on('message', function(msg) {
     ws.send(msg);
   });
+*/
 });
 
 module.exports = router;
