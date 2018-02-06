@@ -4,13 +4,30 @@
  * Module dependencies.
  */
 
+var app = require('../app');
 var debug = require('debug')('phasefield-site:server');
+var http = require('http');
+var expressWs = require('express-ws');
 
 /**
- * Listen on port 80, on all network interfaces.
+ * Get port from environment and store in Express.
  */
 
-var server = require('../server');
+var port = normalizePort(process.env.PORT || '80');
+app.set('port', port);
+
+/**
+ * Create HTTP server.
+ */
+
+var server = http.createServer(app);
+expressWs = expressWs(app, server);
+
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+
+server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
 

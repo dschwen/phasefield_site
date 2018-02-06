@@ -33,12 +33,7 @@ function activateEditors()
           var output = $('<pre class="mooseoutput"></pre>').appendTo(parent);
           
           // open socket
-          socket = new WebSocket('ws://' + location.host + '/echo');
-
-          // as soon as the socket is open, send command to start simmulation
-          socket.onopen = function (event) {
-            socket.send('RUN ' + data.name);
-          };
+          socket = new WebSocket('ws://' + location.host + '/api/?name=' + data.name);
 
           // display output
           socket.onmessage = function (event) {

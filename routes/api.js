@@ -3,6 +3,9 @@ var router = express.Router();
 var crypto = require('crypto');
 var fs = require('fs');
 
+// active simulations
+var simulations = new Map();
+
 // API call
 router.all('/api', function(req, res, next) {
   if (req.body.action === 'setup')
@@ -25,6 +28,7 @@ router.all('/api', function(req, res, next) {
         }
         
         // success
+        simulations.set(name, {'prepared': Date.now(), 'ip': req.connection.remoteAddress});
         res.json({'status': 'success', 'name': name});
       });
     });
@@ -36,8 +40,16 @@ router.all('/api', function(req, res, next) {
 });
 
 // websockets
-router.ws('/echo', function(ws, req) {
-  console.log('received connection');
+router.ws('/api', function(ws, req) {
+  var name = req.query.name;
+  if (!name || !simulations.has(name))
+  {
+    ws.close();
+    return;
+  }
+
+  ws.send('welcome ' + JSON.stringify(simulations.get(name)));
+  
   ws.on('message', function(msg) {
     ws.send(msg);
   });

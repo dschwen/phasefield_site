@@ -4,10 +4,9 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var http = require('http');
 
 var app = express();
-var expressWs = require('express-ws');
+var expressWs = require('express-ws')(app);
 
 var index = require('./routes/index');
 var api = require('./routes/api');
@@ -45,10 +44,4 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-app.set('port', 80);
-
-var server = http.createServer(app);
-expressWs(app, server);
-server.listen(80);
-
-module.exports = server;
+module.exports = app;
