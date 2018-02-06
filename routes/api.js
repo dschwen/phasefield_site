@@ -3,6 +3,7 @@ var router = express.Router();
 var crypto = require('crypto');
 var fs = require('fs');
 var cp = require('child_process');
+var Convert = require('ansi-to-html');
 
 // active simulations
 var simulations = new Map();
@@ -56,31 +57,39 @@ router.ws('/api', function(ws, req) {
   var sim = simulations.get(name);
   sim.running = true;
 
-  ws.send('welcome ' + JSON.stringify(sim) + '\n');
+  //ws.send('welcome ' + JSON.stringify(sim) + '\n');
   
   try {
     sim.child = cp.spawn('/usr/bin/sudo', ['/var/www/phasefield_site/scripts/run_moose.sh', name]);
-    //sim.child = cp.spawn('/bin/ls', ['-la', '/']);
   } catch(err) {
     ws.send(JSON.stringify(err));
+    return;
   }
 
+  var convert = new Convert({
+    fg: '#333',
+    bg: '#f5f5f5',
+    stream: true
+  });
+
   sim.child.on('exit', function (code, signal) {
-    console.log(ws);
-    ws.send('child process exited with ' +
-            `code ${code} and signal ${signal}` + '\n');
-    //ws.close();
+    ws.send(JSON.stringify({'exit': code}));
   });
 
   sim.child.stdout.on('data', function(data) {
-    ws.send(data.toString());
+    ws.send(JSON.stringify({
+      'stdout': convert.toHtml(data.toString())
+    }));
   });
   sim.child.stderr.on('data', function(data) {
-    ws.send(data.toString());
+    ws.send(JSON.stringify({
+      'stderr': convert.toHtml(data.toString())
+    }));
   });
 
   ws.on('close', function(msg) {
     sim.child.kill();
+    // cleanup upper dir here
   });
 
 /*

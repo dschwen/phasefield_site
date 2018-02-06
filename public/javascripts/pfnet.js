@@ -37,7 +37,26 @@ function activateEditors()
 
           // display output
           socket.onmessage = function (event) {
-            output.append(event.data);
+            try {
+              var msg = JSON.parse(event.data);
+            } catch (err) {
+              output.append('parse error');
+              return;
+            }
+
+            if ('exit' in msg)
+            {
+              if (msg.exit == 0) {
+                output.css({ 'border-color': 'green'});
+              } else {
+                output.css({ 'border-color': 'red'});
+              }
+            } else {
+              var html = msg.stdout || msg.stderr;
+              if (html) {
+                output.append(html);
+              }
+            }
           }
         }
       });

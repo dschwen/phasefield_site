@@ -5,7 +5,7 @@ MYUID=`id www -u`
 MYGID=`id www -g`
 
 # source MOOSE profile
-echo Loading MOOSE environment...
+#echo Loading MOOSE environment...
 . /opt/moose/environments/moose_profile
 
 # overlayfs name (sanitize for security)
@@ -25,13 +25,17 @@ mkdir -p $WORK
 mkdir -p $MNT
 
 # mount overlay
-echo Mounting overlay file system...
+#echo Mounting overlay file system...
 mount -t overlay overlay -o lowerdir=$LOWER,upperdir=$UPPER,workdir=$WORK $MNT
 
 # run moose
-echo Running MOOSE...
+#echo Running MOOSE...
 timeout 120s chroot --userspec $MYUID:$MYGID $MNT /home/daniel/moose/modules/combined/combined-opt -i input.i
+MOOSE_RETURN=$?
 
 # unmount overlayfs
-echo Unmounting overlay file system...
+#echo Unmounting overlay file system...
 umount $MNT
+
+# pass back moose return code
+exit $MOOSE_RETURN
