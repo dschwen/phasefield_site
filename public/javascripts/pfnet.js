@@ -44,18 +44,34 @@ function activateEditors()
               return;
             }
 
+            // process exited
             if ('exit' in msg)
             {
               if (msg.exit == 0) {
+                // successfully
                 output.css({ 'border-color': 'green'});
+
+                // limit output window height and scroll to bottom
+                output.css({
+                  'max-height': '15em',
+                  'overflow': 'scroll'
+                }).scrollTop(output[0].scrollHeight);
               } else {
+                // an error occured
                 output.css({ 'border-color': 'red'});
               }
-            } else {
-              var html = msg.stdout || msg.stderr;
-              if (html) {
-                output.append(html);
-              }
+            }
+
+            // output file list received
+            if ('filelist' in msg)
+            {
+              console.log(msg.filelist);
+            }
+
+            // stdout and stderr
+            var html = msg.stdout || msg.stderr;
+            if (html) {
+              output.append(html);
             }
           }
         }
