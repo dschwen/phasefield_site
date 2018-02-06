@@ -12,6 +12,7 @@ function activateEditors()
     // get parent and editor
     var parent = $(this).parent();
     var editor = ace.edit(this);
+    var socket = null;
     
     // set editor options
     editor.setTheme("ace/theme/github");
@@ -22,7 +23,28 @@ function activateEditors()
     // add controls
     parent.prepend($('<button>Run</button>').on('click', function() {
       $.post('/api', { action: 'setup', input: editor.getValue() }, function(data) {
-        console.log(data);
+        if (data.status === 'error') {
+          alert(data.message);
+        }
+
+        if (data.status === 'success') {
+          // add output area
+          parent.find('.mooseoutput').remove();
+          var output = $('<pre class="mooseoutput"></pre>').appendTo(parent);
+          
+          // open socket
+          socket = new WebSocket('ws://' + location.host + '/echo');
+
+          // as soon as the socket is open, send command to start simmulation
+          socket.onopen = function (event) {
+            socket.send('RUN ' + data.name);
+          };
+
+          // display output
+          socket.onmessage = function (event) {
+            output.append(event.data);
+          }
+        }
       });
     }));
   });

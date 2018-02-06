@@ -3,7 +3,7 @@ var router = express.Router();
 var crypto = require('crypto');
 var fs = require('fs');
 
-/* GET users listing. */
+// API call
 router.all('/api', function(req, res, next) {
   if (req.body.action === 'setup')
   {
@@ -33,6 +33,14 @@ router.all('/api', function(req, res, next) {
   {
     res.json({'status': 'error', 'message': 'Unknown or missing action parameter.'});
   }
+});
+
+// websockets
+router.ws('/echo', function(ws, req) {
+  console.log('received connection');
+  ws.on('message', function(msg) {
+    ws.send(msg);
+  });
 });
 
 module.exports = router;
