@@ -11,7 +11,7 @@ var Convert = require('ansi-to-html');
 var simulations = new Map();
 
 // API call
-router.all('/api', function(req, res, next) {
+router.all('/api', (req, res, next) => {
   if (req.body.action === 'setup')
   {
     // get unique id for the overlayfs
@@ -19,14 +19,14 @@ router.all('/api', function(req, res, next) {
 
     // make directory and deposit input file
     var dir = '/var/overlay/upper/' + name;
-    fs.mkdir(dir, 0o744, function(err) {
+    fs.mkdir(dir, 0o744, err => {
       if (err) 
       {
         res.json({'status': 'error', 'message': 'Unable to create upper overlay directory.'});
         return;
       }
 
-      fs.writeFile(dir + '/input.i', req.body.input, function(err) { 
+      fs.writeFile(dir + '/input.i', req.body.input, err => { 
         if (err)
         {
           res.json({'status': 'error', 'message': 'Unable to write input file.'});
@@ -66,7 +66,7 @@ router.all('/api', function(req, res, next) {
 
     // load file data
     var dir = '/var/overlay/upper/' + name;
-    fs.readFile(dir + '/' + file, function(err, data) {
+    fs.readFile(dir + '/' + file, (err, data) => {
       if (err) {
         res.json({'status': 'error', 'message': 'Error reading file.'});
         return;
@@ -82,7 +82,7 @@ router.all('/api', function(req, res, next) {
 });
 
 // websockets
-router.ws('/api', function(ws, req) {
+router.ws('/api', (ws, req) => {
   var name = req.query.name;
   if (!name || !simulations.has(name) || simulations.get(name).running)
   {
@@ -108,17 +108,17 @@ router.ws('/api', function(ws, req) {
     stream: true
   });
 
-  sim.child.on('exit', function (code, signal) {
+  sim.child.on('exit', (code, signal) => {
     // immediately send exit code
     ws.send(JSON.stringify({'exit': code}));
 
     // gather file list (if the run was successful)
     if (code === 0) {
-      recursive(sim.dir, function(err, absolute_paths) {
+      recursive(sim.dir, (err, absolute_paths) => {
         if (!err) {
           // make paths relative to sim.dir
           var relative_paths = [];
-          absolute_paths.forEach(function(path) {
+          absolute_paths.forEach(path => {
             // only add paths if they are strictly below sim.dir
             if (path.substr(0, sim.dir.length) === sim.dir) {
               var new_path = path.substr(sim.dir.length + 1);
@@ -142,23 +142,23 @@ router.ws('/api', function(ws, req) {
     }
   });
 
-  sim.child.stdout.on('data', function(data) {
+  sim.child.stdout.on('data', data => {
     ws.send(JSON.stringify({
       'stdout': convert.toHtml(data.toString())
     }));
   });
-  sim.child.stderr.on('data', function(data) {
+  sim.child.stderr.on('data', data => {
     ws.send(JSON.stringify({
       'stderr': convert.toHtml(data.toString())
     }));
   });
 
-  ws.on('close', function(msg) {
+  ws.on('close', msg => {
     // kill potentially running process
     sim.child.kill();
 
     // cleanup upper dir
-    rm(sim.dir, function() {console.log('Deleted ', sim.dir)});
+    rm(sim.dir, () => {console.log('Deleted ', sim.dir)});
     simulations.delete(name);
   });
 });

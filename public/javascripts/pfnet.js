@@ -21,12 +21,18 @@ function activateEditors()
     editor.setOption("minLines", 2);
 
     // add controls
-    parent.prepend($('<button>Run</button>').on('click', function() {
+    var run_button = $('<button>Run</button>').on('click', function() {
+      // disable button to avoid double setup and run
+      run_button.attr("disabled", "disabled");
+
       $.post('/api', { action: 'setup', input: editor.getValue() }, function(data) {
+        // run setup failed
         if (data.status === 'error') {
           alert(data.message);
+          return;
         }
 
+        // setup succeeded
         if (data.status === 'success') {
           // add output area
           parent.find('.mooseoutput').remove();
@@ -47,6 +53,9 @@ function activateEditors()
             // process exited
             if ('exit' in msg)
             {
+              // re-enable button
+              run_button.removeAttr("disabled");
+
               if (msg.exit == 0) {
                 // successfully
                 output.css({ 'border-color': 'green'});
@@ -56,6 +65,11 @@ function activateEditors()
                   'max-height': '15em',
                   'overflow': 'scroll'
                 }).scrollTop(output[0].scrollHeight);
+
+                // get csv data (for debugging)
+                $.post('/api', { action: 'get', name: data.name, file: 'input_out.csv' }, function(res) {
+                  console.log(res);
+                });
               } else {
                 // an error occured
                 output.css({ 'border-color': 'red'});
@@ -63,8 +77,7 @@ function activateEditors()
             }
 
             // output file list received
-            if ('filelist' in msg)
-            {
+            if ('filelist' in msg) {
               console.log(msg.filelist);
             }
 
@@ -76,6 +89,7 @@ function activateEditors()
           }
         }
       });
-    }));
+    });
+    parent.prepend(run_button);
   });
 }
