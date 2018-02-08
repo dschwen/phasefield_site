@@ -43,8 +43,9 @@ function activateEditors()
 
           // display output
           socket.onmessage = function (event) {
+            var msg;
             try {
-              var msg = JSON.parse(event.data);
+              msg = JSON.parse(event.data);
             } catch (err) {
               output.append('parse error');
               return;
@@ -86,7 +87,7 @@ function activateEditors()
               });
 
               // add file load controls
-              parent.append(dropdown).append($(<button>View</button>).on('click', () => {
+              parent.append(dropdown).append($('<button>View</button>').on('click', () => {
                 let file = dropdown.val();
                 
               }));  
@@ -97,7 +98,7 @@ function activateEditors()
             if (html) {
               output.append(html);
             }
-          }
+          };
         }
       });
     });
