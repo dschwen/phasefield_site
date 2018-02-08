@@ -61,7 +61,8 @@ router.all('/api', (req, res, next) => {
 
     // check if the simulation exists
     if (!name || !simulations.has(name)) {
-      res.json({'status': 'error', 'message': 'Unknown simulation name.'});
+      res.status(500);
+      res.render('Unknown simulation name.');
       return;
     }
 
@@ -69,7 +70,8 @@ router.all('/api', (req, res, next) => {
 
     // check if the file exists
     if (!file || sim.files.indexOf(file) < 0) {
-      res.json({'status': 'error', 'message': 'Requesting an invalid simulation output file.'});
+      res.status(404);
+      res.render('Requesting an invalid simulation output file.');
       return;
     }
 
@@ -77,10 +79,15 @@ router.all('/api', (req, res, next) => {
     let dir = '/var/overlay/upper/' + name;
     fs.readFile(dir + '/' + file, (err, data) => {
       if (err) {
-        res.json({'status': 'error', 'message': 'Error reading file.'});
+        res.status(500);
+        res.render('Error reading file.');
         return;
       } else {
-        res.json({'status': 'success', 'data': data});
+        res.writeHead(200, {
+          'Content-Type': 'application/octet-stream',
+          'Content-Length': data.length
+        });
+        res.end(data);
       }
     });
   }
@@ -126,15 +133,25 @@ router.ws('/api', (ws, req) => {
       recursive(sim.dir, (err, absolute_paths) => {
         if (!err) {
           // make paths relative to sim.dir
-          var relative_paths = [];
+          let relative_paths = [];
           absolute_paths.forEach(path => {
             // only add paths if they are strictly below sim.dir
             if (path.substr(0, sim.dir.length) === sim.dir) {
-              var new_path = path.substr(sim.dir.length + 1);
+              let new_path = path.substr(sim.dir.length + 1);
               if (new_path != 'input.i') {
                 relative_paths.push(new_path);
               }
-           }
+
+              // convert vtu to vtp for visualization
+              if (vtu2vtp && path.substr(-4) === '.vtu')
+              {
+                // sync for now :-/
+                let out = cp.spawnSync(vtu2vtp, [path, path + '.vtp']);
+                if (!out.error) {
+                  relative_paths.push(new_path + '.vtp');
+                }
+              }
+            }
           });
 
          // store file list for validation

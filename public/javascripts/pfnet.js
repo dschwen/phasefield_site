@@ -65,11 +65,6 @@ function activateEditors()
                   'max-height': '15em',
                   'overflow': 'scroll'
                 }).scrollTop(output[0].scrollHeight);
-
-                // get csv data (for debugging)
-                $.post('/api', { action: 'get', name: data.name, file: 'input_out.csv' }, function(res) {
-                  console.log(res);
-                });
               } else {
                 // an error occured
                 output.css({ 'border-color': 'red'});
@@ -78,7 +73,23 @@ function activateEditors()
 
             // output file list received
             if ('filelist' in msg) {
+              // do not add comntrols if no files were generated
+              if (msg.filelist.length === 0) {
+                return;
+              }
+
+              // build dropdown with file list
               console.log(msg.filelist);
+              var dropdown = $('<select />');
+              msg.filelist.forEach(el => {
+                $('<option />', {value: el, text: el}).appendTo(dropdown);
+              });
+
+              // add file load controls
+              parent.append(dropdown).append($(<button>View</button>).on('click', () => {
+                let file = dropdown.val();
+                
+              }));  
             }
 
             // stdout and stderr
