@@ -1,24 +1,33 @@
-var express = require('express');
-var router = express.Router();
-var crypto = require('crypto');
-var fs = require('fs');
-var cp = require('child_process');
-var rm = require('rimraf');
-var recursive = require('recursive-readdir');
-var Convert = require('ansi-to-html');
+const express = require('express');
+const router = express.Router();
+const crypto = require('crypto');
+const fs = require('fs');
+const cp = require('child_process');
+const rm = require('rimraf');
+const which = require('which');
+const recursive = require('recursive-readdir');
+const Convert = require('ansi-to-html');
 
 // active simulations
 var simulations = new Map();
+
+// do we have the vtu2vtp executable in the path?
+var vtu2vtp = null;
+which('vtu2vtp', (err, path) => {
+  if (!err) {
+    vtu2vtp = path;
+  }
+});
 
 // API call
 router.all('/api', (req, res, next) => {
   if (req.body.action === 'setup')
   {
     // get unique id for the overlayfs
-    var name = crypto.randomBytes(16).toString('hex');
+    let name = crypto.randomBytes(16).toString('hex');
 
     // make directory and deposit input file
-    var dir = '/var/overlay/upper/' + name;
+    let dir = '/var/overlay/upper/' + name;
     fs.mkdir(dir, 0o744, err => {
       if (err) 
       {
@@ -47,8 +56,8 @@ router.all('/api', (req, res, next) => {
   }
   else if (req.body.action === 'get')
   {
-    var name = req.body.name;
-    var file = req.body.file;
+    let name = req.body.name;
+    let file = req.body.file;
 
     // check if the simulation exists
     if (!name || !simulations.has(name)) {
@@ -56,7 +65,7 @@ router.all('/api', (req, res, next) => {
       return;
     }
 
-    var sim = simulations.get(name);
+    let sim = simulations.get(name);
 
     // check if the file exists
     if (!file || sim.files.indexOf(file) < 0) {
@@ -65,7 +74,7 @@ router.all('/api', (req, res, next) => {
     }
 
     // load file data
-    var dir = '/var/overlay/upper/' + name;
+    let dir = '/var/overlay/upper/' + name;
     fs.readFile(dir + '/' + file, (err, data) => {
       if (err) {
         res.json({'status': 'error', 'message': 'Error reading file.'});
@@ -158,7 +167,7 @@ router.ws('/api', (ws, req) => {
     sim.child.kill();
 
     // cleanup upper dir
-    rm(sim.dir, () => {console.log('Deleted ', sim.dir)});
+    rm(sim.dir, () => console.log('Deleted ', sim.dir));
     simulations.delete(name);
   });
 });
