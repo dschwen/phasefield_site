@@ -21,6 +21,7 @@ function activateEditors()
     editor.setOption("minLines", 2);
 
     // add controls
+    var output_toolbar = $('<span />').addClass('output_toolbar');
     var run_button = $('<button>Run</button>').on('click', function() {
       // disable button to avoid double setup and run
       run_button.attr("disabled", "disabled");
@@ -87,7 +88,8 @@ function activateEditors()
               });
 
               // add file load controls
-              parent.append(dropdown).append($('<button>View</button>').on('click', () => {
+              output_toolbar.empty();
+              output_toolbar.append(dropdown).append($('<button>View</button>').on('click', () => {
                 let file = dropdown.val();
                 
               }));  
@@ -102,6 +104,7 @@ function activateEditors()
         }
       });
     });
-    parent.prepend(run_button);
+
+    parent.prepend(output_toolbar).prepend(run_button);
   });
 }
