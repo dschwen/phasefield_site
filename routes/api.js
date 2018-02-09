@@ -59,10 +59,12 @@ router.all('/api', (req, res, next) => {
     let name = req.body.name;
     let file = req.body.file;
 
+    console.log(simulations);
+
     // check if the simulation exists
     if (!name || !simulations.has(name)) {
       res.status(500);
-      res.render('Unknown simulation name.');
+      //res.render('Unknown simulation name.');
       return;
     }
 
@@ -71,7 +73,7 @@ router.all('/api', (req, res, next) => {
     // check if the file exists
     if (!file || sim.files.indexOf(file) < 0) {
       res.status(404);
-      res.render('Requesting an invalid simulation output file.');
+      //res.render('Requesting an invalid simulation output file.');
       return;
     }
 
@@ -80,7 +82,8 @@ router.all('/api', (req, res, next) => {
     fs.readFile(dir + '/' + file, (err, data) => {
       if (err) {
         res.status(500);
-        res.render('Error reading file.');
+        console.log(err);
+        //res.render('Error reading file.');
         return;
       } else {
         res.writeHead(200, {
@@ -140,16 +143,6 @@ router.ws('/api', (ws, req) => {
               let new_path = path.substr(sim.dir.length + 1);
               if (new_path != 'input.i') {
                 relative_paths.push(new_path);
-              }
-
-              // convert vtu to vtp for visualization
-              if (vtu2vtp && path.substr(-4) === '.vtu')
-              {
-                // sync for now :-/
-                let out = cp.spawnSync(vtu2vtp, [path, path + '.vtp']);
-                if (!out.error) {
-                  relative_paths.push(new_path + '.vtp');
-                }
               }
             }
           });

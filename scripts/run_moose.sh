@@ -33,6 +33,11 @@ mount -t overlay overlay -o lowerdir=$LOWER,upperdir=$UPPER,workdir=$WORK $MNT
 timeout 120s chroot --userspec $MYUID:$MYGID $MNT /home/daniel/moose/modules/combined/combined-opt -i input.i
 MOOSE_RETURN=$?
 
+# convert vtu to vtp
+which vtu2vtp > /dev/null && { 
+  find $UPPER -name \*.vtu -exec vtu2vtp \{\} \{\}.vtp \; 
+}
+
 # unmount overlayfs
 #echo Unmounting overlay file system...
 umount $MNT

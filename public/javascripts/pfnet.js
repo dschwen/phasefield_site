@@ -91,7 +91,7 @@ function activateEditors()
               output_toolbar.empty();
               output_toolbar.append(dropdown).append($('<button>View</button>').on('click', () => {
                 let file = dropdown.val();
-                
+                output.load('/api', { action: 'get', name: data.name, file: file });               
               }));  
             }
 
