@@ -8,7 +8,6 @@ var vtkViewer = (function()
   var vtkVolumeMapper = vtk.Rendering.Core.vtkVolumeMapper;
   var vtkColorTransferFunction = vtk.Rendering.Core.vtkColorTransferFunction;
   var vtkActor = vtk.Rendering.Core.vtkActor;
-  var vtkColorMaps =vtk.Rendering.Core.ColorTransferFunction.vtkColorMaps;
   var vtkMapper = vtk.Rendering.Core.vtkMapper;
   var vtkURLExtract = vtk.Common.Core.vtkURLExtract;
   var vtkXMLPolyDataReader =vtk.IO.XML.vtkXMLPolyDataReader;
@@ -50,4 +49,4 @@ var vtkViewer = (function()
   return {
     createRenderer: createRenderer
   };
-});
+})();
