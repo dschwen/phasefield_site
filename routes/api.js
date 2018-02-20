@@ -1,12 +1,13 @@
-const express = require('express');
-const router = express.Router();
-const crypto = require('crypto');
-const fs = require('fs');
-const cp = require('child_process');
-const rm = require('rimraf');
-const which = require('which');
+const express   = require('express');
+const router    = express.Router();
+const crypto    = require('crypto');
+const fs        = require('fs');
+const cp        = require('child_process');
+const rm        = require('rimraf');
+const which     = require('which');
 const recursive = require('recursive-readdir');
-const Convert = require('ansi-to-html');
+const Convert   = require('ansi-to-html');
+const csv       = require('csvtojson');
 
 // active simulations
 var simulations = new Map();
@@ -86,11 +87,28 @@ router.all('/api', (req, res, next) => {
         //res.render('Error reading file.');
         return;
       } else {
-        res.writeHead(200, {
-          'Content-Type': 'application/octet-stream',
-          'Content-Length': data.length
-        });
-        res.end(data);
+        if (file.substr(-4) == '.csv') {
+          // process and return CSV data
+          csv().fromString(data.toString())
+            .on('json', (row) => {
+              for (var key in row) {
+                if (row.hasOwnProperty(key)) { 
+                  if (!json[key]) { json[key] = []; }
+                  json[key].push(parseFloat(data[key]));
+                }
+              }
+            })
+            .on('done', (error) => {
+              res.json(json);
+            });
+        } else {
+          // return anything else as binary blob
+          res.writeHead(200, {
+            'Content-Type': 'application/octet-stream',
+            'Content-Length': data.length
+          });
+          res.end(data);
+        }
       }
     });
   }
@@ -183,3 +201,5 @@ router.ws('/api', (ws, req) => {
 });
 
 module.exports = router;
+
+

@@ -91,7 +91,13 @@ function activateEditors()
               output_toolbar.empty();
               output_toolbar.append(dropdown).append($('<button>View</button>').on('click', () => {
                 let file = dropdown.val();
-                output.load('/api', { action: 'get', name: data.name, file: file });               
+                if (file.substr(-4) == '.csv') {
+                  vegaEmbed(output[0], {
+                    data: { "url": "/api?name" + encodeURIComponent(data.name) + "&file" + encodeURIComponent(file) }
+                  });
+                } else {
+                  output.load('/api', { action: 'get', name: data.name, file: file });
+                }
               }));  
             }
 

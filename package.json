@@ -9,6 +9,7 @@
     "ansi-to-html": "^0.6.4",
     "body-parser": "~1.17.1",
     "cookie-parser": "~1.4.3",
+    "csvtojson": "^1.1.9",
     "debug": "~2.6.3",
     "express": "~4.15.2",
     "express-ws": "^3.0.0",
