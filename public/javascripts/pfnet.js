@@ -92,8 +92,8 @@ function activateEditors()
               output_toolbar.append(dropdown).append($('<button>View</button>').on('click', () => {
                 let file = dropdown.val();
                 if (file.substr(-4) == '.csv') {
-                  vegaEmbed(output[0], {
-                    data: { "url": "/api?name" + encodeURIComponent(data.name) + "&file" + encodeURIComponent(file) }
+                  $.getJSON('/api', { action: 'get', name: data.name, file: file }, (data) => {
+                    setupPlot(output, data);
                   });
                 } else {
                   output.load('/api', { action: 'get', name: data.name, file: file });
@@ -113,4 +113,35 @@ function activateEditors()
 
     parent.prepend(output_toolbar).prepend(run_button);
   });
+}
+
+// setup a plot wir data on an HTML document
+function setupPlot(object, data)
+{
+  // reformat data for flot
+  function preparePoints(col1, col2)
+  {
+    var points = [];
+    var n = data[col1].length;
+    if (n != data[col2].length) {
+      throw "Column length error";
+    }
+
+    for (var i = 0; mi < n; ++i) {
+      points.push([data[col1][i], data[col2][i]]);
+    }
+
+    return points;
+  }
+
+  // get all column keys from the JSON
+  var keys = [];
+  for (var key in data) {
+    if (data.hasOwnProperty(key)) {
+      keys.push(key);
+    }
+  }
+
+  // plot first two columns
+  object.plot(preparePoints(keys[0], keys[1]));
 }
