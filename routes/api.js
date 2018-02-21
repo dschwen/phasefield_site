@@ -89,12 +89,13 @@ router.all('/api', (req, res, next) => {
       } else {
         if (file.substr(-4) == '.csv') {
           // process and return CSV data
+          let json = {};
           csv().fromString(data.toString())
             .on('json', (row) => {
               for (var key in row) {
                 if (row.hasOwnProperty(key)) { 
                   if (!json[key]) { json[key] = []; }
-                  json[key].push(parseFloat(data[key]));
+                  json[key].push(parseFloat(row[key]));
                 }
               }
             })

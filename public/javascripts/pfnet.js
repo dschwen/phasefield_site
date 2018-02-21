@@ -92,7 +92,7 @@ function activateEditors()
               output_toolbar.append(dropdown).append($('<button>View</button>').on('click', () => {
                 let file = dropdown.val();
                 if (file.substr(-4) == '.csv') {
-                  $.getJSON('/api', { action: 'get', name: data.name, file: file }, (data) => {
+                  $.post('/api', { action: 'get', name: data.name, file: file }, (data) => {
                     setupPlot(output, data);
                   });
                 } else {
@@ -127,7 +127,7 @@ function setupPlot(object, data)
       throw "Column length error";
     }
 
-    for (var i = 0; mi < n; ++i) {
+    for (var i = 0; i < n; ++i) {
       points.push([data[col1][i], data[col2][i]]);
     }
 
@@ -142,6 +142,16 @@ function setupPlot(object, data)
     }
   }
 
+  // add canvas
+  //var ctx = $('<canvas/>').appendTo(object);
+
   // plot first two columns
-  object.plot(preparePoints(keys[0], keys[1]));
+  //var myChart = new Chart(ctx, {
+  object.plot([preparePoints(keys[0], keys[1])]);
+  //});
 }
+
+// stuff to run on load
+activateEditors();
+renderMathInElement(document.body);
+

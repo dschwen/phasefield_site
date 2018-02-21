@@ -82,8 +82,18 @@ block content
     |  solve_type = 'PJFNK'
     |[]
     |
+    |[VectorPostprocessors]
+    |  [./c]
+    |    type = LineValueSampler
+    |    start_point = '0 0 0'
+    |    end_point = '1 0 0'
+    |    sort_by = x
+    |    variable = u
+    |    num_points = 40
+    |  [../]
+    |[]
+    |
     |[Outputs]
-    |  vtk = true
     |  csv = true
     |[]
   
