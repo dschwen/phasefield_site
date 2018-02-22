@@ -13,7 +13,7 @@ function activateEditors()
     var parent = $(this).parent();
     var editor = ace.edit(this);
     var socket = null;
-    
+
     // set editor options
     editor.setTheme("ace/theme/github");
     editor.session.setMode("ace/mode/moose");
@@ -22,7 +22,9 @@ function activateEditors()
 
     // add controls
     var output_toolbar = $('<span />').addClass('output_toolbar');
-    var run_button = $('<button>Run</button>').on('click', function() {
+    var run_button = $('<button><i class="material-icons cloud left">cloud</i>run</button>')
+      .addClass('waves-effect waves-light btn')
+      .on('click', function() {
       // disable button to avoid double setup and run
       run_button.attr("disabled", "disabled");
 
@@ -38,7 +40,7 @@ function activateEditors()
           // add output area
           parent.find('.mooseoutput').remove();
           var output = $('<pre class="mooseoutput"></pre>').appendTo(parent);
-          
+
           // open socket
           socket = new WebSocket('ws://' + location.host + '/api/?name=' + data.name);
 
@@ -98,7 +100,7 @@ function activateEditors()
                 } else {
                   output.load('/api', { action: 'get', name: data.name, file: file });
                 }
-              }));  
+              }));
             }
 
             // stdout and stderr
@@ -154,4 +156,3 @@ function setupPlot(object, data)
 // stuff to run on load
 activateEditors();
 renderMathInElement(document.body);
-
