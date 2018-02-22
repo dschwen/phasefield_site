@@ -8,7 +8,7 @@
 // turn on intercative editors
 function activateEditors()
 {
-  $('.mooseinput').wrap('<div class="moosewrapper"></div>').each(function() {
+  $('.mooseinput').addClass('hioverable card-panel').wrap('<div class="moosewrapper"></div>').each(function() {
     // get parent and editor
     var parent = $(this).parent();
     var editor = ace.edit(this);
@@ -39,7 +39,7 @@ function activateEditors()
         if (data.status === 'success') {
           // add output area
           parent.find('.mooseoutput').remove();
-          var output = $('<pre class="mooseoutput"></pre>').appendTo(parent);
+          var output = $('<pre class="mooseoutput card-panel"></pre>').appendTo(parent);
 
           // open socket
           socket = new WebSocket('ws://' + location.host + '/api/?name=' + data.name);
