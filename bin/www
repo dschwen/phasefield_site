@@ -4,9 +4,9 @@
  * Module dependencies.
  */
 
-var app = require('../app');
-var debug = require('debug')('phasefield-site:server');
-var http = require('http');
+var app       = require('../app');
+var debug     = require('debug')('phasefield-site:server');
+var http      = require('http');
 var expressWs = require('express-ws');
 
 /**
@@ -82,6 +82,12 @@ function onError(error) {
  */
 
 function onListening() {
+  // drop priviliges if root
+  if (process.getuid() === 0) {
+    process.setgid(process.env.WWW_GROUP || 'www-data');
+    process.setuid(process.env.WWW_USER || 'www-data');
+  }
+ 
   var addr = server.address();
   var bind = (typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port);
   debug('Listening on ' + bind);
