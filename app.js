@@ -9,7 +9,8 @@ var app = express();
 var expressWs = require('express-ws')(app);
 
 var index = require('./routes/index');
-var api = require('./routes/api');
+var pages = require('./routes/pages');
+var api   = require('./routes/api');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -25,6 +26,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', api);
 app.use('/', index);
+app.use('/', pages);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

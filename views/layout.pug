@@ -18,7 +18,8 @@ html
     title= title
 
   body
-    h1.header.center.orange-text= title
+    if title
+      h1.header.center.orange-text= title
     div.container
       block content
 
