@@ -8,11 +8,13 @@
 // turn on intercative editors
 function activateEditors()
 {
-  $('.mooseinput').addClass('hioverable card-panel').wrap('<div class="moosewrapper"></div>').each(function() {
-    // get parent and editor
-    var parent = $(this).parent();
-    var editor = ace.edit(this);
-    var socket = null;
+  $('.moosewrapper').each(function() {
+    // get wrapper and editor
+    var wrapper = $(this);
+    var input   = wrapper.find('.mooseinput');
+    var output  = wrapper.find('.mooseoutput');
+    var editor  = ace.edit(input[0]);
+    var socket  = null;
 
     // set editor options
     editor.setTheme("ace/theme/github");
@@ -20,11 +22,11 @@ function activateEditors()
     editor.setOption("maxLines", 30);
     editor.setOption("minLines", 2);
 
+    // equal height
+    setTimeout(() => { output.height(input.height()) }, 1);
+
     // add controls
-    var output_toolbar = $('<span />').addClass('output_toolbar');
-    var run_button = $('<button><i class="material-icons cloud left">cloud</i>run</button>')
-      .addClass('waves-effect waves-light btn')
-      .on('click', function() {
+    var run_button = wrapper.find('button.mooserun').on('click', function() {
       // disable button to avoid double setup and run
       run_button.attr("disabled", "disabled");
 
@@ -37,9 +39,8 @@ function activateEditors()
 
         // setup succeeded
         if (data.status === 'success') {
-          // add output area
-          parent.find('.mooseoutput').remove();
-          var output = $('<pre class="mooseoutput card-panel"></pre>').appendTo(parent);
+          // clear output area
+          output.empty();
 
           // open socket
           socket = new WebSocket('ws://' + location.host + '/api/?name=' + data.name);
@@ -62,16 +63,10 @@ function activateEditors()
 
               if (msg.exit == 0) {
                 // successfully
-                output.css({ 'border-color': 'green'});
-
-                // limit output window height and scroll to bottom
-                output.css({
-                  'max-height': '15em',
-                  'overflow': 'scroll'
-                }).scrollTop(output[0].scrollHeight);
+                output.scrollTop(output[0].scrollHeight);
               } else {
                 // an error occured
-                output.css({ 'border-color': 'red'});
+                // output.css({ 'border-color': 'red'});
               }
             }
 
@@ -112,8 +107,6 @@ function activateEditors()
         }
       });
     });
-
-    parent.prepend(output_toolbar).prepend(run_button);
   });
 }
 

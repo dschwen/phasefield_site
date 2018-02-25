@@ -1,8 +1,10 @@
 # MOOSE example input
 
 > We'll use 
-> `!moose test.i`
+> `@moose test.i`
 > here to insert a functional editor!
+
+@moose test.i
 
 ## Equation
 
