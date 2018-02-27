@@ -16,6 +16,10 @@ blockquote {
   height: 15em;
 }
 
+.mooseoutput {
+  font-size: 10pt;
+}
+
 .moosewrapper button {
   margin-bottom: 0.1em;
 }

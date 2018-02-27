@@ -29,8 +29,8 @@ mkdir -p $MNT
 mount -t overlay overlay -o lowerdir=$LOWER,upperdir=$UPPER,workdir=$WORK $MNT
 
 # run moose
-#echo Running MOOSE...
-timeout 120s chroot --userspec $MYUID:$MYGID $MNT /home/daniel/moose/modules/combined/combined-opt -i input.i
+export TERM=xterm-256color
+timeout 120s chroot --userspec $MYUID:$MYGID $MNT /home/daniel/moose/modules/combined/combined-opt --color on -i input.i
 MOOSE_RETURN=$?
 
 # convert vtu to vtp
