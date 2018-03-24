@@ -5,8 +5,10 @@ MYUID=`id www-data -u`
 MYGID=`id www-data -g`
 
 # source MOOSE profile
-#echo Loading MOOSE environment...
 . /opt/moose/environments/moose_profile
+
+# source config
+. $(dirname $0)/moose.config
 
 # overlayfs name (sanitize for security)
 NAME=${1//[^a-zA-Z0-9_]/}
@@ -25,12 +27,11 @@ mkdir -p $WORK
 mkdir -p $MNT
 
 # mount overlay
-#echo Mounting overlay file system...
 mount -t overlay overlay -o lowerdir=$LOWER,upperdir=$UPPER,workdir=$WORK $MNT
 
 # run moose
 export TERM=xterm-256color
-timeout 120s chroot --userspec $MYUID:$MYGID $MNT /home/daniel/moose/modules/combined/combined-opt --color on -i input.i
+timeout 120s chroot --userspec $MYUID:$MYGID $MNT ${MOOSE_EXECUTABLE} --color on -i input.i
 MOOSE_RETURN=$?
 
 # convert vtu to vtp
@@ -39,7 +40,6 @@ which vtu2vtp > /dev/null && {
 }
 
 # unmount overlayfs
-#echo Unmounting overlay file system...
 umount $MNT
 
 # pass back moose return code
