@@ -17,7 +17,7 @@ To the bottom of `/etc/sudoers`. Make sure the `run_moose.sh` is not writable by
 ### Prerequisites
 
 ```
-sudo apt install nodejs makejail
+sudo apt install nodejs npm makejail
 ```
 
 ### MOOSE compile
@@ -37,7 +37,7 @@ Now in the combined directory run the install script
 sudo /var/www/phasefield_site/scripts/install.sh
 ```
 
-### Launcing the server
+### Launching the server
 
 The node based server is started with
 
